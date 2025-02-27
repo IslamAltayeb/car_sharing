@@ -28,11 +28,6 @@ def create_trip( req:TripBase,user_id: int, car_id: int, db: Session= Depends(ge
 def update_trip( req:TripBase,user_id: int, trip_id: int, db: Session= Depends(get_db)):
     return trips.update_trip(db, req, user_id, trip_id)
 
-#delete trip
-@router.delete('/delete_trip/{user_id}/{trip_id}')
-def delete_trip(user_id: int, trip_id: int, db: Session=Depends(get_db)):
-    return trips.delete_trip(db, user_id, trip_id)
-
 #get all trips that are related to a user
 @router.get('/get_all_trips/{user_id}', response_model=List[TripDisplay])
 def get_all_user_trips(user_id: int, db: Session=Depends(get_db)):
@@ -48,3 +43,8 @@ def searsh_trip(departure_location: str, destination_location: str, departure_ti
 @router.put('/update_status/{user_id}/{trip_id}')
 def update_trip_status(user_id: int, trip_id: int, status: trip_status, db: Session=Depends(get_db)):
     return trips.update_trip_status(db, user_id, trip_id, status.value)
+
+#delete trip
+@router.delete('/delete_trip/{user_id}/{trip_id}')
+def delete_trip(user_id: int, trip_id: int, db: Session=Depends(get_db)):
+    return trips.delete_trip(db, user_id, trip_id)

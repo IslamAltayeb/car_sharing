@@ -17,7 +17,7 @@ class DbCar(Base):
     wifi_available = Column(Boolean)
     air_conditioning = Column(Boolean)
     pet_friendly = Column(Boolean)
-    car_status = Column(String, default="Pending") # Pending , approved , rejected by admin
-    car_availability_status = Column(String , nullable=True)  # available , booked , in use , unavailable
+    car_status = Column(String, default="pending") # Pending , approved , rejected by admin
+    car_availability_status = Column(String , default="available")  # available , booked , in use , unavailable
     user = relationship("DbUser", back_populates='cars')
     trip = relationship("DbTrip", back_populates="car")

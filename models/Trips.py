@@ -18,8 +18,8 @@ class DbTrip(Base):
     available_adult_seats = Column(Integer)
     available_children_seats = Column(Integer)
     cost = Column(Float)
-    passengers_count = Column(Integer, nullable=True)
-    status = Column(String, default="Scheduled", nullable=True) # scheduled, ongoing, completed, or cancelled
+    passengers_count = Column(Integer, default=0)
+    status = Column(String, default="scheduled") # scheduled, ongoing, completed, or cancelled
     created_at = Column(String, default=func.now()) 
     updated_at = Column(String, nullable=True)
 
