@@ -115,3 +115,17 @@ def upload_photos(db: Session, id: int, files: list[UploadFile] = File(...)):
     db.commit()
     db.refresh(review)
     return review
+
+
+def delete_photos(db: Session, id: int):
+    review = db.query(DbReview).filter(DbReview.id == id).first()
+    if not review:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    existing_photos = review.photos.split(",")
+    for photo in existing_photos:
+        photo_path = Path(photo)
+        photo_path.unlink()
+    review.photos = None
+    db.commit()
+    db.refresh(review)
+    return review

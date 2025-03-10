@@ -37,7 +37,8 @@ def create_user(db: Session, request: UserBase):
         email = request.email,
         password = Hash.bcrypt(request.password),
         about = request.about,
-        phone_number = request.phone_number
+        phone_number = request.phone_number,
+        avatar="avatars/default_avatar.jpg"
     )
 
     db.add(new_user)
@@ -58,6 +59,7 @@ def verify_email(token: str, db: Session):
         raise HTTPException(status_code=400, detail="Invalid token")
     user.is_verified = True
     db.commit()
+    return "You email confirmed. Now you can log in and enjoy HRIN app"
 
 
 UPLOAD_DIR = Path("avatars")
@@ -69,13 +71,30 @@ def upload_avatar(db: Session, id: int, file: UploadFile = File(...)):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     old_avatar_path = Path(user.avatar)
-    if old_avatar_path.exists():
+    if old_avatar_path.exists() and old_avatar_path != Path("avatars/default_avatar.jpg"):
         old_avatar_path.unlink()
     final_path = upload_picture(UPLOAD_DIR, file)
     user.avatar = str(final_path)
     db.commit()
     db.refresh(user)
     return user
+
+
+def delete_avatar(db: Session, id: int):
+    user = db.query(DbUser).filter(DbUser.id == id).first()
+    if not user:
+         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                             detail=f'User with id {id} is not exist!')
+    avatar_path = Path(user.avatar)
+    if avatar_path == Path("avatars/default_avatar.jpg"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f'You can not delete default avatar!')
+    avatar_path.unlink()
+    user.avatar = "avatars/default_avatar.jpg"
+    db.commit()
+    db.refresh(user)
+    return user
+
 
 
 def get_all_users(db:Session)-> List[userDisplay]:
